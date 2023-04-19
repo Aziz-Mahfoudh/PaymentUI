@@ -17,12 +17,16 @@ import { MdOutlineKeyboardReturn } from "react-icons/md";
 import PasswordInput from "../../shared/password-input";
 import { Formik, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const loginSchema = Yup.object().shape({
     email: Yup.string().email("*Invalid email").required("*No email provided."),
     password: Yup.string().required("*No Password provided."),
   });
+
+  const navigate = useNavigate();
 
   return (
     <Box maxW="24rem">
@@ -44,7 +48,16 @@ const LoginForm = () => {
           password: "",
         }}
         onSubmit={(values, { resetForm }) => {
-          console.log(JSON.stringify(values, null, 2));
+          axios.post('http://localhost:8080/auth/authenticate', values)
+          .then(res =>{
+            //console.log(JSON.stringify(values, null, 2))
+            console.log(res);
+            const token = res.data.token;
+            localStorage.setItem('token', token);
+            navigate('/checkout');
+
+          }
+          )
           resetForm();
         }}>
         {({ handleSubmit, errors, touched }) => (
