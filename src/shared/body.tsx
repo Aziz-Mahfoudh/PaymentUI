@@ -17,6 +17,7 @@ import { MdAdd } from "react-icons/md";
 
 import SingleBody from "./single-body";
 import { string } from "yup";
+import axios from "axios";
 
 const Body = () => {
   const [fields, setFields] = useState([{ id: 1, email: "", percentage: "" }]);
@@ -33,6 +34,11 @@ const Body = () => {
     setFields(_fields);
     console.log("removed");
   };
+
+  const handleLogout = () =>{
+    axios.post('http://localhost:8080/auth/logout')
+  }
+
 
   return (
     <Flex w="lg" paddingBlock="20px" paddingInline="25px">
@@ -85,7 +91,9 @@ const Body = () => {
           </TabPanels>
         </Tabs>
         <Center>
-          <Button variant="link" color="primary.600" fontWeight="400">
+          <Button
+            onClick={handleLogout}
+            variant="link" color="primary.600" fontWeight="400">
             Delete payment and return.
           </Button>
         </Center>

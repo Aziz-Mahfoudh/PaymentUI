@@ -9,9 +9,31 @@ import {
   StatNumber,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Info = () => {
+
+
+  const [balance, setBalance] = useState(null)
+  const token = localStorage.getItem('token')
+  const userID = localStorage.getItem('userId');
+  const userId = userID?.toString();
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+
+  useEffect(() => {
+      axios.get("/api/v1/users/balance/"+userId, {
+      })
+      .then(res => {
+          console.log(res.data)
+          setBalance(res.data) 
+      })
+
+  },[token, userID])
+
+
   const userData = {
     name: "Aziz Mahfoudh",
     balance: "200.5",
@@ -26,7 +48,7 @@ const Info = () => {
           Balance
         </StatLabel>
         <StatNumber fontSize="lg">
-          {userData.balance} {userData.currency}
+          {balance} TND
         </StatNumber>
       </Stat>
       <Spacer />
