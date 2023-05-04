@@ -18,6 +18,7 @@ import { MdAdd } from "react-icons/md";
 import SingleBody from "./single-body";
 import { string } from "yup";
 import axios from "axios";
+import { useCookies } from "react-cookie";
 
 const Body = () => {
   const [fields, setFields] = useState([{ id: 1, email: "", percentage: "" }]);
@@ -35,8 +36,25 @@ const Body = () => {
     console.log("removed");
   };
 
+  const [cookie] = useCookies(["paymentID"])
+  const paymentID = cookie.paymentID;
+  const paymentId = paymentID.payment_id;
+  const email = localStorage.getItem("email")
+  const token = localStorage.getItem('token')
+
+  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
   const handleLogout = () =>{
-    axios.post('http://localhost:8080/auth/logout')
+    localStorage.clear();
+  }
+
+  const handlePayment = () => {
+    axios.post("/api/v1/payment/execute",{"paymentId" : paymentId, "username" : email})
+    .then(res =>
+      console.log(res)
+      
+      )
+    
   }
 
 
@@ -56,7 +74,9 @@ const Body = () => {
                   variant="solid"
                   colorScheme="primary"
                   w="md"
-                  borderTopRadius="0px">
+                  borderTopRadius="0px"
+                  onClick={handlePayment}
+                  >
                   Complete
                 </Button>
               </Center>
@@ -82,7 +102,9 @@ const Body = () => {
                     variant="solid"
                     colorScheme="primary"
                     w="md"
-                    borderTopRadius="0px">
+                    borderTopRadius="0px"
+                    onClick={() => console.log("Helloooo")}
+                    >
                     Complete
                   </Button>
                 </VStack>

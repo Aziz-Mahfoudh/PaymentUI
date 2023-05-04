@@ -12,14 +12,30 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Cookies } from "react-cookie";
+import { instanceOf } from 'prop-types';
+import { useCookies } from 'react-cookie';
+
+
 
 const Info = () => {
 
 
   const [balance, setBalance] = useState(null)
+  const [price, setPrice] = useState(null)
+  const [currency, setCurrency] = useState(null)
+
   const token = localStorage.getItem('token')
   const userID = localStorage.getItem('userId');
   const userId = userID?.toString();
+  
+  const [cookie] = useCookies(["paymentID"])
+  const paymentID = cookie.paymentID;
+  const paymentId = paymentID.payment_id;
+  console.log(paymentID.payment_id.toString());
+
+ 
+
   axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
 
@@ -29,9 +45,15 @@ const Info = () => {
       .then(res => {
           console.log(res.data)
           setBalance(res.data) 
-      })
+      }),
+      axios.get("/api/v1/payment/informations/"+paymentId)
+      .then(res => {
+        setPrice(res.data.total),
+        setCurrency(res.data.currency)
+      }
+        )
 
-  },[token, userID])
+  },[token, userID, paymentId])
 
 
   const userData = {
@@ -58,7 +80,7 @@ const Info = () => {
           Total
         </StatLabel>
         <StatNumber fontSize="lg">
-          {userData.total} {userData.currency}
+          {price} {currency}
         </StatNumber>
       </Stat>
     </Flex>

@@ -7,8 +7,14 @@ import {
   Spacer,
   Text,
 } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+
+
+
   const userData = {
     name: "Aziz Mahfoudh",
     balance: "200.5",

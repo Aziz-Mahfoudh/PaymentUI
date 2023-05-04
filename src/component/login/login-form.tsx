@@ -56,6 +56,7 @@ const LoginForm = () => {
             const userId = res.data.id;
             localStorage.setItem('token', token);
             localStorage.setItem('userId', userId);
+            localStorage.setItem('email' , values.email)
             navigate('/checkout');
 
           }
