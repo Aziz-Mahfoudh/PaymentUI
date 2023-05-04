@@ -12,8 +12,19 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const token = localStorage.getItem("token");
+  const userID = localStorage.getItem("userId");
+  const userId = userID?.toString();
+  const [identity, setIdentity] = useState(null);
 
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
+  useEffect(() => {
+    axios.get("/api/v1/users/identity/" + userId).then((res) => {
+      setIdentity(res.data);
+      console.log(identity);
+    });
+  });
 
   const userData = {
     name: "Aziz Mahfoudh",
@@ -32,7 +43,7 @@ const Header = () => {
       <HStack>
         <Text>Welcome</Text>
         <Text color="primary.600" fontWeight="600">
-          {userData.name}
+          {identity}
         </Text>
       </HStack>
     </Flex>
