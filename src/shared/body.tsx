@@ -11,7 +11,7 @@ import {
   Tabs,
   VStack,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Field from "./field";
 import { MdAdd } from "react-icons/md";
 
@@ -19,6 +19,7 @@ import SingleBody from "./single-body";
 import { string } from "yup";
 import axios from "axios";
 import { useCookies } from "react-cookie";
+import AlertPayment from "../component/payment-confirmation";
 
 const Body = () => {
   const [fields, setFields] = useState([{ id: 1, email: "", percentage: "" }]);
@@ -36,27 +37,34 @@ const Body = () => {
     console.log("removed");
   };
 
-  const [cookie] = useCookies(["paymentID"])
+  const [cookie] = useCookies(["paymentID"]);
   const paymentID = cookie.paymentID;
   const paymentId = paymentID.payment_id;
-  const email = localStorage.getItem("email")
-  const token = localStorage.getItem('token')
+  const email = localStorage.getItem("email");
+  const token = localStorage.getItem("token");
 
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
-  const handleLogout = () =>{
+  const handleLogout = () => {
     localStorage.clear();
-  }
+  };
+
+  const [status, setStatus] = useState("");
+  const [visible, setVisible] = useState(false);
 
   const handlePayment = () => {
-    axios.post("/api/v1/payment/execute",{"paymentId" : paymentId, "username" : email})
-    .then(res =>
-      console.log(res)
-      
-      )
-    
-  }
+    axios
+      .post("/api/v1/payment/execute", {
+        paymentId: paymentId,
+        username: email,
+      })
+      .then((res) => {
+        console.log(res);
+        setStatus(res.data.status);
+      });
 
+    setVisible(true);
+  };
 
   return (
     <Flex w="lg" paddingBlock="20px" paddingInline="25px">
@@ -70,15 +78,20 @@ const Body = () => {
             <TabPanel>
               <SingleBody></SingleBody>
               <Center>
-                <Button
-                  variant="solid"
-                  colorScheme="primary"
-                  w="md"
-                  borderTopRadius="0px"
-                  onClick={handlePayment}
-                  >
-                  Complete
-                </Button>
+                <VStack>
+                  <AlertPayment
+                    status={status}
+                    visible={visible}
+                    paymentId=""></AlertPayment>
+                  <Button
+                    variant="solid"
+                    colorScheme="primary"
+                    w="md"
+                    borderTopRadius="0px"
+                    onClick={handlePayment}>
+                    Complete
+                  </Button>
+                </VStack>
               </Center>
             </TabPanel>
             <TabPanel>
@@ -103,8 +116,7 @@ const Body = () => {
                     colorScheme="primary"
                     w="md"
                     borderTopRadius="0px"
-                    onClick={() => console.log("Helloooo")}
-                    >
+                    onClick={() => console.log("Helloooo")}>
                     Complete
                   </Button>
                 </VStack>
@@ -115,7 +127,9 @@ const Body = () => {
         <Center>
           <Button
             onClick={handleLogout}
-            variant="link" color="primary.600" fontWeight="400">
+            variant="link"
+            color="primary.600"
+            fontWeight="400">
             Delete payment and return.
           </Button>
         </Center>
